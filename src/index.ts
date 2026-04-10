@@ -3,6 +3,7 @@ import { DisTube } from "distube";
 import { YouTubePlugin } from "@distube/youtube";
 import { SpotifyPlugin } from "@distube/spotify";
 import { SoundCloudPlugin } from "@distube/soundcloud";
+import { YtDlpPlugin } from "@distube/yt-dlp";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
 import * as path from "path";
@@ -42,6 +43,7 @@ client.distube = new DisTube(client, {
     }),
     new SpotifyPlugin(),
     new SoundCloudPlugin(),
+    new YtDlpPlugin(),
   ],
   ffmpeg: {
     path: ffmpegPath,
