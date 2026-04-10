@@ -40,7 +40,8 @@ const playCommand: Command = {
         deaf: true,
       });
 
-      let res = await interaction.client.manager.search(query);
+      let searchEngine = query.startsWith("http") ? query : `scsearch:${query}`;
+      let res = await interaction.client.manager.search(searchEngine);
 
       // --- Sistem Fallback Cerdas (Anti Blank) ---
       // Jika pencarian YouTube kosong (karena error plugin atau diblokir), otomatis membelokkan pencarian ke SoundCloud
