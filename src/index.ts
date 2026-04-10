@@ -3,7 +3,6 @@ import { DisTube } from "distube";
 import { YouTubePlugin } from "@distube/youtube";
 import { SpotifyPlugin } from "@distube/spotify";
 import { SoundCloudPlugin } from "@distube/soundcloud";
-import { YtDlpPlugin } from "@distube/yt-dlp";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
 import * as path from "path";
@@ -38,9 +37,8 @@ client.distube = new DisTube(client, {
   emitAddSongWhenCreatingQueue: false,
   emitAddListWhenCreatingQueue: false,
   plugins: [
-    new YtDlpPlugin({ update: true }),
     new YouTubePlugin({
-      cookies: [],
+      cookies: [], // Secara eksplisit kosongkan cookie
     }),
     new SpotifyPlugin(),
     new SoundCloudPlugin(),
