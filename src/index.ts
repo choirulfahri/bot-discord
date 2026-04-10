@@ -40,11 +40,6 @@ client.distube = new DisTube(client, {
   ytdlOptions: {
     highWaterMark: 1 << 24,
     quality: "highestaudio",
-    agent: ytdl.createAgent(
-      process.env.YOUTUBE_COOKIE
-        ? JSON.parse(process.env.YOUTUBE_COOKIE)
-        : undefined,
-    ),
   },
 });
 
