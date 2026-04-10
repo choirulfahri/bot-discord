@@ -5,14 +5,12 @@ lavalink:
   plugins:
     - dependency: "dev.lavalink.youtube:youtube-plugin:1.18.0"
       repository: "https://maven.lavalink.dev/releases"
-    - dependency: "com.github.topi314.lavasrc:lavasrc-plugin:4.3.0"
-      repository: "https://maven.lavalink.dev/releases"
   server:
     password: "youshallnotpass"
     sources:
       youtube: false
       bandcamp: true
-      soundcloud: false
+      soundcloud: true
       twitch: true
       vimeo: true
       http: true
@@ -27,10 +25,3 @@ plugins:
       - ANDROID
       - TVHTML5EMBEDDED
       - WEB
-  lavasrc:
-    sources:
-      spotify: false
-      applemusic: false
-      deezer: false
-      yandexmusic: false
-      soundcloud: true
