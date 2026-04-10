@@ -48,6 +48,13 @@ client.manager = new Kazagumo(
   },
   new Connectors.DiscordJS(client),
   Nodes,
+  {
+    moveOnDisconnect: false,
+    resume: true,
+    resumeTimeout: 60,
+    reconnectTries: 15,
+    restTimeout: 10000,
+  },
 );
 
 // Event jika node siap
@@ -63,7 +70,9 @@ client.manager.shoukaku.on("close", (name, code, reason) =>
 
 // Event Pemutar Lagu Kazagumo
 client.manager.on("playerStart", (player, track) => {
-  const channel = player.textId ? client.channels.cache.get(player.textId) as TextChannel : null;
+  const channel = player.textId
+    ? (client.channels.cache.get(player.textId) as TextChannel)
+    : null;
   if (channel) {
     const embed = new EmbedBuilder()
       .setColor("#0099ff")
@@ -76,7 +85,9 @@ client.manager.on("playerStart", (player, track) => {
 });
 
 client.manager.on("playerEmpty", (player) => {
-  const channel = player.textId ? client.channels.cache.get(player.textId) as TextChannel : null;
+  const channel = player.textId
+    ? (client.channels.cache.get(player.textId) as TextChannel)
+    : null;
   if (channel) {
     channel
       .send("Meninggalkan saluran karena lagu telah habis.")
