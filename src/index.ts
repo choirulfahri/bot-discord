@@ -1,8 +1,5 @@
 import { Client, GatewayIntentBits, Collection } from "discord.js";
 import { DisTube } from "distube";
-import { YouTubePlugin } from "@distube/youtube";
-import { SpotifyPlugin } from "@distube/spotify";
-import { SoundCloudPlugin } from "@distube/soundcloud";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
 import * as path from "path";
@@ -36,17 +33,12 @@ client.distube = new DisTube(client, {
   emitNewSongOnly: true,
   emitAddSongWhenCreatingQueue: false,
   emitAddListWhenCreatingQueue: false,
-  plugins: [
-    new YouTubePlugin({
-      cookies: [], // Secara eksplisit kosongkan cookie
-    }),
-    new SpotifyPlugin(),
-    new SoundCloudPlugin(),
-  ],
-  ffmpeg: {
-    path: ffmpegPath,
+  plugins: [],
+  youtubeCookie: "",
+  ytdlOptions: {
+    highWaterMark: 1 << 24,
+    quality: "highestaudio",
   },
-  joinNewVoiceChannel: true,
 });
 
 // --- Command Handler ---
