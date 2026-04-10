@@ -144,6 +144,17 @@ process.on("uncaughtException", (error) => {
   sendErrorToDev(error, "Uncaught Exception");
 });
 
+// --- Graceful Shutdown (Mematikan bot aman, otomatis keluar dari Voice) ---
+const gracefulShutdown = () => {
+  console.log("Menerima perintah Restart/Stop (PM2). Bot sedang log out...");
+  client.destroy();
+  process.exit(0);
+};
+
+// Menangkap sinyal dari PM2 saat diperintah restart/stop
+process.on("SIGINT", gracefulShutdown);
+process.on("SIGTERM", gracefulShutdown);
+
 // Login
 if (!process.env.DISCORD_TOKEN) {
   console.error("❌ Kesalahan: DISCORD_TOKEN tidak ditemukan di file .env");
