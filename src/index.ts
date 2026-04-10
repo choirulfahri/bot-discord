@@ -38,12 +38,12 @@ client.distube = new DisTube(client, {
   emitAddSongWhenCreatingQueue: false,
   emitAddListWhenCreatingQueue: false,
   plugins: [
+    new YtDlpPlugin({ update: true }),
     new YouTubePlugin({
       cookies: [],
     }),
     new SpotifyPlugin(),
     new SoundCloudPlugin(),
-    new YtDlpPlugin(),
   ],
   ffmpeg: {
     path: ffmpegPath,
