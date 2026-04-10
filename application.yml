@@ -29,8 +29,8 @@ plugins:
       - WEB
   lavasrc:
     sources:
-      spotify: true
-      applemusic: true
-      deezer: true
+      spotify: false
+      applemusic: false
+      deezer: false
       yandexmusic: false
       soundcloud: true
