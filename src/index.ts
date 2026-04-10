@@ -39,6 +39,11 @@ client.distube = new DisTube(client, {
       ytdlOptions: {
         quality: "highestaudio",
         highWaterMark: 1 << 25,
+        requestOptions: {
+          headers: {
+            cookie: "", // Placeholder cookie
+          },
+        },
       },
     }),
   ],
