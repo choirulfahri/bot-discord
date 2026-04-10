@@ -29,10 +29,17 @@ const playCommand: Command = {
         deaf: true
       });
 
-      const res = await interaction.client.manager.search(query);
+      let res = await interaction.client.manager.search(query);
+
+      // --- Sistem Fallback Cerdas (Anti Blank) ---
+      // Jika pencarian YouTube kosong (karena error plugin atau diblokir), otomatis membelokkan pencarian ke SoundCloud
+      if (res.tracks.length === 0 && !query.startsWith("http")) {
+        console.log(`[Fallback] YouTube diblokir/kosong untuk "${query}", mencoba memutar dari SoundCloud...`);
+        res = await interaction.client.manager.search(`scsearch:${query}`);
+      }
 
       if (res.tracks.length === 0) {
-        await interaction.editReply("Pencarian tidak menemukan hasil apapun :(");
+        await interaction.editReply("Pencarian tidak menemukan hasil apapun di YouTube maupun SoundCloud :(");
         return;
       }
 
