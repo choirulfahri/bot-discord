@@ -38,6 +38,11 @@ client.distube = new DisTube(client, {
   ffmpeg: {
     path: ffmpegPath,
   },
+  ytdlOptions: {
+    quality: "highestaudio",
+    highWaterMark: 1 << 25,
+  },
+  joinNewVoiceChannel: true,
 });
 
 // --- Command Handler ---
