@@ -29,6 +29,8 @@ client.commands = new Collection();
 console.log("===============================");
 console.log("FFMPEG PATH is: ", ffmpegPath);
 console.log("===============================");
+const ytdl = require("ytdl-core"); // Overwrite default distube crawler
+
 client.distube = new DisTube(client, {
   emitNewSongOnly: true,
   emitAddSongWhenCreatingQueue: false,
@@ -38,6 +40,11 @@ client.distube = new DisTube(client, {
   ytdlOptions: {
     highWaterMark: 1 << 24,
     quality: "highestaudio",
+    agent: ytdl.createAgent(
+      process.env.YOUTUBE_COOKIE
+        ? JSON.parse(process.env.YOUTUBE_COOKIE)
+        : undefined,
+    ),
   },
 });
 
