@@ -17,14 +17,22 @@ export = (client: Client, sendErrorToDev: Function) => {
       }
     })
     .on("error" as any, (channel: any, error: any) => {
-      // Kirim error teknis ke DM atau log console
-      sendErrorToDev(error, "Music System (DisTube)");
+      // Perbaikan: Terkadang DisTube mengirimkan error di parameter pertama, bukan objek channel
+      const isErrorOnly = channel instanceof Error || channel.message;
+      const actualError = isErrorOnly ? channel : error;
+      const hasChannel =
+        channel && channel.send && typeof channel.send === "function";
 
-      if (channel) {
-        // Pesan Publik yang Ramah Pengguna (Hanya teks biasa, tidak ada debugger js)
-        (channel as TextChannel).send(
-          `Sebentar kak ada masalah teknis \nMaaf kak, proses lagu terhenti sesaat. Jangan khawatir, kak developer sudah menerima laporan error ini dan akan segera memperbaikinya!`,
-        );
+      // Kirim error teknis ke DM atau log console dengan informasi objek error yang benar
+      sendErrorToDev(actualError, "Music System (DisTube)");
+
+      if (hasChannel) {
+        // Pesan Publik yang Ramah Pengguna (Hanya teks biasa)
+        (channel as TextChannel)
+          .send(
+            `Sebentar kak ada masalah teknis \nMaaf kak, proses lagu terhenti sesaat. Jangan khawatir, kak developer sudah menerima laporan error ini dan akan segera memperbaikinya!`,
+          )
+          .catch(() => {}); // catch tambahan jika send gagal
       }
     });
 };
