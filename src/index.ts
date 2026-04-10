@@ -1,18 +1,21 @@
-import { Client, GatewayIntentBits, Collection } from "discord.js";
-import { DisTube } from "distube";
+import {
+  Client,
+  GatewayIntentBits,
+  Collection,
+  TextChannel,
+  EmbedBuilder,
+} from "discord.js";
+import { Kazagumo, KazagumoTrack } from "kazagumo";
+import { Connectors } from "shoukaku";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
 import * as path from "path";
 import dns from "node:dns";
 dns.setDefaultResultOrder("ipv4first");
-// Import file module Types agar TypeScript mengenali client.commands dan client.distube
+// Import file module Types agar TypeScript mengenali client.commands dan client.manager
 import "./types";
 
 dotenv.config();
-
-// Mengatur FFMPEG_PATH secara global agar modul lain seperti prism-media (bawaan Discord.js Voice) dapat membacanya.
-const ffmpegPath = require("ffmpeg-static");
-process.env.FFMPEG_PATH = require("ffmpeg-static");
 
 const client = new Client({
   intents: [
@@ -25,49 +28,61 @@ const client = new Client({
 // Inisialisasi Collection untuk commands
 client.commands = new Collection();
 
-// Inisialisasi DisTube dengan YouTubePlugin
-console.log("===============================");
-console.log("FFMPEG PATH is: ", ffmpegPath);
-console.log("===============================");
-const ytdl = require("ytdl-core"); // Overwrite default distube crawler
-const { YtDlpPlugin } = require("@distube/yt-dlp");
-
-let parsedYoutubeCookies: any = process.env.YOUTUBE_COOKIE || "";
-try {
-  const cookiePath = path.join(__dirname, "../cookies.json");
-  if (fs.existsSync(cookiePath)) {
-    parsedYoutubeCookies = JSON.parse(fs.readFileSync(cookiePath, "utf8"));
-  } else if (
-    typeof parsedYoutubeCookies === "string" &&
-    parsedYoutubeCookies.startsWith("[")
-  ) {
-    parsedYoutubeCookies = JSON.parse(parsedYoutubeCookies);
-  } else if (
-    typeof parsedYoutubeCookies === "string" &&
-    parsedYoutubeCookies.includes("=")
-  ) {
-    // Basic konversi dari raw string ke object array style jika user memaksa string biasa
-    parsedYoutubeCookies = parsedYoutubeCookies.split(";").map((cookie) => {
-      const parts = cookie.trim().split("=");
-      const name = parts.shift() || "";
-      const value = parts.join("=") || "";
-      return { domain: ".youtube.com", name, value, path: "/" };
-    });
-  }
-} catch (e) {
-  console.error("Gagal membaca atau mengonversi Format Cookies YouTube:", e);
-}
-
-client.distube = new DisTube(client, {
-  emitNewSongOnly: true,
-  emitAddSongWhenCreatingQueue: false,
-  emitAddListWhenCreatingQueue: false,
-  plugins: [new YtDlpPlugin({ update: true })],
-  youtubeCookie: parsedYoutubeCookies,
-  ytdlOptions: {
-    highWaterMark: 1 << 24,
-    quality: "highestaudio",
+// --- Konfigurasi Lavalink Node ---
+const Nodes = [
+  {
+    name: "LocalNode",
+    url: "localhost:2333", // Port default lavalink
+    auth: "rahasialavalink", // Password default sesuai application.yml
+    secure: false, // Karena kita pakai localhost HTTP biasa
   },
+];
+
+client.manager = new Kazagumo(
+  {
+    defaultSearchEngine: "youtube",
+    send: (guildId, payload) => {
+      const guild = client.guilds.cache.get(guildId);
+      if (guild) guild.shard.send(payload);
+    },
+  },
+  new Connectors.DiscordJS(client),
+  Nodes,
+);
+
+// Event jika node siap
+client.manager.shoukaku.on("ready", (name) =>
+  console.log(`✓ Node ${name} terhubung!`),
+);
+client.manager.shoukaku.on("error", (name, error) =>
+  console.error(`❌ Node ${name} error:`, error),
+);
+client.manager.shoukaku.on("close", (name, code, reason) =>
+  console.warn(`⚠ Node ${name} terputus (Code: ${code}, Reason: ${reason})`),
+);
+
+// Event Pemutar Lagu Kazagumo
+client.manager.on("playerStart", (player, track) => {
+  const channel = player.textId ? client.channels.cache.get(player.textId) as TextChannel : null;
+  if (channel) {
+    const embed = new EmbedBuilder()
+      .setColor("#0099ff")
+      .setDescription(`🎶 Sedang memainkan: **${track.title}**`)
+      .setFooter({
+        text: `Diminta oleh: ${(track.requester as any)?.user?.username || track.author}`,
+      });
+    channel.send({ embeds: [embed] }).catch(() => {});
+  }
+});
+
+client.manager.on("playerEmpty", (player) => {
+  const channel = player.textId ? client.channels.cache.get(player.textId) as TextChannel : null;
+  if (channel) {
+    channel
+      .send("Meninggalkan saluran karena lagu telah habis.")
+      .catch(() => {});
+  }
+  player.destroy(); // Keluar dari voice channel
 });
 
 // --- Command Handler ---
@@ -97,12 +112,8 @@ if (fs.existsSync(foldersPath)) {
 }
 
 // --- Discord Event Handler ---
-client.once("clientReady", () => {
+client.once("ready", () => {
   console.log(`Hallo kak aku sudah siap! ${client.user?.tag}!`);
-  console.log(
-    "Di dalam DisTube options, path disetel ke: ",
-    client.distube.options.ffmpeg.path,
-  );
 });
 
 // --- Global Error Handlers (Anti-Crash) ---
@@ -153,9 +164,6 @@ client.on("interactionCreate", async (interaction) => {
     }
   }
 });
-
-// --- DisTube Event Handler Loader ---
-require("./events/distubeEvents")(client, sendErrorToDev);
 
 process.on("unhandledRejection", (reason, promise) => {
   sendErrorToDev(reason, "Unhandled Rejection");

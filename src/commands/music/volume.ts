@@ -1,46 +1,32 @@
-import {
-  SlashCommandBuilder,
-  ChatInputCommandInteraction,
-  GuildMember,
-} from "discord.js";
+import { SlashCommandBuilder, ChatInputCommandInteraction, GuildMember } from "discord.js";
 import { Command } from "../../types";
 
 const volumeCommand: Command = {
   data: new SlashCommandBuilder()
     .setName("volume")
-    .setDescription("Mengubah volume musik")
+    .setDescription("Mengatur volume musik")
     .addIntegerOption((option) =>
-      option
-        .setName("angka")
-        .setDescription("Volume (0-100)")
-        .setRequired(true)
-        .setMinValue(0)
-        .setMaxValue(100),
+      option.setName("level").setDescription("Tingkat volume (1-100)").setRequired(true).setMinValue(1).setMaxValue(100)
     ),
   async execute(interaction: ChatInputCommandInteraction) {
-    const volume = interaction.options.getInteger("angka", true);
+    const level = interaction.options.getInteger("level", true);
     const member = interaction.member as GuildMember;
-    const voiceChannel = member.voice.channel;
+    const voiceChannel = member.voice?.channel;
 
     if (!voiceChannel) {
-      await interaction.reply({
-        content: "Maaf, Kakak harus ada di dalam voice ya:)",
-        ephemeral: true,
-      });
+      await interaction.reply({ content: "Maaf, Kakak harus ada di dalam voice ya:)", ephemeral: true });
       return;
     }
 
-    const queue = interaction.client.distube.getQueue(interaction.guildId!);
-    if (!queue) {
-      await interaction.reply({
-        content: "Maaf, Kakak belum memutar musik nih, coba deh putar dulu:)",
-        ephemeral: true,
-      });
+    const player = interaction.client.manager.players.get(interaction.guildId as string);
+    if (!player) {
+      await interaction.reply({ content: "Tidak ada lagu yang sedang diputar.", ephemeral: true });
       return;
     }
 
-    queue.setVolume(volume);
-    await interaction.reply(`Volumenya aku ubah jadi \`${volume}%\``);
+    player.setVolume(level);
+    
+    await interaction.reply(`Volume berhasil diatur menjadi **${level}%**!`);
   },
 };
 

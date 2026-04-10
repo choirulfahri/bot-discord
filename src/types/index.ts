@@ -3,12 +3,12 @@ import {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
 } from "discord.js";
-import { DisTube } from "distube";
+import { Kazagumo } from "kazagumo";
 
 declare module "discord.js" {
   export interface Client {
     commands: Collection<string, Command>;
-    distube: DisTube;
+    manager: Kazagumo;
   }
 }
 
