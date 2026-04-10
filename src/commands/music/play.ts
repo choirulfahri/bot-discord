@@ -40,15 +40,18 @@ const playCommand: Command = {
         deaf: true,
       });
 
-      let searchEngine = query.startsWith("http") ? query : `scsearch:${query}`;
+                  let searchEngine = query.startsWith("http") ? query : query;
       let res = await interaction.client.manager.search(searchEngine);
 
-      // --- Sistem Fallback Cerdas (Anti Blank) ---
-      // Jika pencarian YouTube kosong (karena error plugin atau diblokir), otomatis membelokkan pencarian ke SoundCloud
+      // Lapis 1 Fallback: YouTube Music (Seringkali aman dari block pencarian)
       if (res.tracks.length === 0 && !query.startsWith("http")) {
-        console.log(
-          `[Fallback] YouTube diblokir/kosong untuk "${query}", mencoba memutar dari SoundCloud...`,
-        );
+        console.log(`[Fallback 1] YT kosong untuk "${query}", coba YT Music...`);
+        res = await interaction.client.manager.search(`ytmsearch:${query}`);
+      }
+
+      // Lapis 2 Fallback: SoundCloud (Resolusi terakhir bila YouTube lumpuh total)
+      if (res.tracks.length === 0 && !query.startsWith("http")) {
+        console.log(`[Fallback 2] YTM kosong untuk "${query}", coba SoundCloud...`);
         res = await interaction.client.manager.search(`scsearch:${query}`);
       }
 
