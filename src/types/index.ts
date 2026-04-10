@@ -1,14 +1,10 @@
-import {
-  Collection,
-  ChatInputCommandInteraction,
-  SlashCommandBuilder,
-} from "discord.js";
-import { Kazagumo } from "kazagumo";
+import { Collection, ChatInputCommandInteraction } from "discord.js";
+import { Player } from "discord-player";
 
 declare module "discord.js" {
   export interface Client {
     commands: Collection<string, Command>;
-    manager: Kazagumo;
+    player: Player;
   }
 }
 
