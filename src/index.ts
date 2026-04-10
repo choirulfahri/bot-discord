@@ -52,8 +52,9 @@ client.manager = new Kazagumo(
     moveOnDisconnect: false,
     resume: true,
     resumeTimeout: 60,
-    reconnectTries: 15,
-    restTimeout: 10000,
+    reconnectInterval: 10000,
+    reconnectTries: 60,
+    restTimeout: 15000,
   },
 );
 
