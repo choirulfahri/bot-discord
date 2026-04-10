@@ -34,13 +34,16 @@ client.distube = new DisTube(client, {
   emitNewSongOnly: true,
   emitAddSongWhenCreatingQueue: false,
   emitAddListWhenCreatingQueue: false,
-  plugins: [new YouTubePlugin()],
+  plugins: [
+    new YouTubePlugin({
+      ytdlOptions: {
+        quality: "highestaudio",
+        highWaterMark: 1 << 25,
+      },
+    }),
+  ],
   ffmpeg: {
     path: ffmpegPath,
-  },
-  ytdlOptions: {
-    quality: "highestaudio",
-    highWaterMark: 1 << 25,
   },
   joinNewVoiceChannel: true,
 });
