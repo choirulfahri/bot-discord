@@ -31,7 +31,13 @@ const playCommand: Command = {
 
     await interaction.deferReply();
 
-    try {
+        try {
+      // Periksa apakah ada node yang aktif sebelum membuat player
+      if (interaction.client.manager.shoukaku.nodes.size === 0) {
+         await interaction.editReply("❌ Oops! Mesin pemutar musik sedang offline atau sedang dipanaskan. Tunggu beberapa detik lalu coba lagi ya kak!");
+         return;
+      }
+
       const player = await interaction.client.manager.createPlayer({
         guildId: interaction.guildId as string,
         textId: interaction.channelId,
