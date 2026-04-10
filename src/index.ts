@@ -34,7 +34,7 @@ client.distube = new DisTube(client, {
   emitAddSongWhenCreatingQueue: false,
   emitAddListWhenCreatingQueue: false,
   plugins: [],
-  youtubeCookie: "",
+  youtubeCookie: process.env.YOUTUBE_COOKIE || "",
   ytdlOptions: {
     highWaterMark: 1 << 24,
     quality: "highestaudio",
