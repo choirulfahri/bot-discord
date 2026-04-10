@@ -33,7 +33,8 @@ const playCommand: Command = {
 
         try {
       // Periksa apakah ada node yang aktif sebelum membuat player
-      if (interaction.client.manager.shoukaku.nodes.size === 0) {
+      const node = interaction.client.manager.shoukaku.nodes.get("LocalNode");
+      if (!node || node.state !== 2) { // state 2 = CONNECTED
          await interaction.editReply("❌ Oops! Mesin pemutar musik sedang offline atau sedang dipanaskan. Tunggu beberapa detik lalu coba lagi ya kak!");
          return;
       }
