@@ -15,6 +15,22 @@ lavalink:
       vimeo: true
       http: true
       local: false
+    bufferDurationMs: 400
+    frameBufferDurationMs: 5000
+    opusEncodingQuality: 10
+    resamplingQuality: LOW
+    trackStuckThresholdMs: 10000
+    useSeekGhosting: true
+    youtubePlaylistLoadLimit: 6
+    playerUpdateInterval: 5
+    youtubeSearchEnabled: true
+    soundcloudSearchEnabled: true
+    gc-warnings: true
+  # NAS (Native Audio Sending) - Sering merusak pemutaran jika tidak disupport Linux VPS
+  # Kita matikan agar OS bisa handle native networking UDP
+    jda-nas:
+      enabled: false
+
 plugins:
   youtube:
     enabled: true
