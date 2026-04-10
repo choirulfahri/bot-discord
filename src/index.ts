@@ -30,6 +30,7 @@ console.log("===============================");
 console.log("FFMPEG PATH is: ", ffmpegPath);
 console.log("===============================");
 const ytdl = require("ytdl-core"); // Overwrite default distube crawler
+const { YtDlpPlugin } = require("@distube/yt-dlp");
 
 let parsedYoutubeCookies: any = process.env.YOUTUBE_COOKIE || "";
 try {
@@ -61,7 +62,7 @@ client.distube = new DisTube(client, {
   emitNewSongOnly: true,
   emitAddSongWhenCreatingQueue: false,
   emitAddListWhenCreatingQueue: false,
-  plugins: [],
+  plugins: [new YtDlpPlugin({ update: true })],
   youtubeCookie: parsedYoutubeCookies,
   ytdlOptions: {
     highWaterMark: 1 << 24,
