@@ -31,12 +31,18 @@ const playCommand: Command = {
 
     await interaction.deferReply();
 
-        try {
+    try {
       // Periksa apakah ada node yang aktif sebelum membuat player
-      const node = interaction.client.manager.shoukaku.nodes.get("LocalNode");
-      if (!node || node.state !== 2) { // state 2 = CONNECTED
-         await interaction.editReply("❌ Oops! Mesin pemutar musik sedang offline atau sedang dipanaskan. Tunggu beberapa detik lalu coba lagi ya kak!");
-         return;
+      let node = interaction.client.manager.shoukaku.nodes.get("LocalNode");
+      if (!node) {
+        node = interaction.client.manager.shoukaku.getIdealNode();
+      }
+
+      if (!node) {
+        await interaction.editReply(
+          "❌ Oops! Mesin pemutar musik sedang offline atau sedang dipanaskan. Tunggu beberapa detik lalu coba lagi ya kak!",
+        );
+        return;
       }
 
       const player = await interaction.client.manager.createPlayer({
@@ -47,18 +53,22 @@ const playCommand: Command = {
         deaf: false,
       });
 
-                  let searchEngine = query.startsWith("http") ? query : query;
+      let searchEngine = query.startsWith("http") ? query : query;
       let res = await interaction.client.manager.search(searchEngine);
 
       // Lapis 1 Fallback: YouTube Music (Seringkali aman dari block pencarian)
       if (res.tracks.length === 0 && !query.startsWith("http")) {
-        console.log(`[Fallback 1] YT kosong untuk "${query}", coba YT Music...`);
+        console.log(
+          `[Fallback 1] YT kosong untuk "${query}", coba YT Music...`,
+        );
         res = await interaction.client.manager.search(`ytmsearch:${query}`);
       }
 
       // Lapis 2 Fallback: SoundCloud (Resolusi terakhir bila YouTube lumpuh total)
       if (res.tracks.length === 0 && !query.startsWith("http")) {
-        console.log(`[Fallback 2] YTM kosong untuk "${query}", coba SoundCloud...`);
+        console.log(
+          `[Fallback 2] YTM kosong untuk "${query}", coba SoundCloud...`,
+        );
         res = await interaction.client.manager.search(`scsearch:${query}`);
       }
 
