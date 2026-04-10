@@ -31,12 +31,38 @@ console.log("FFMPEG PATH is: ", ffmpegPath);
 console.log("===============================");
 const ytdl = require("ytdl-core"); // Overwrite default distube crawler
 
+let parsedYoutubeCookies: any = process.env.YOUTUBE_COOKIE || "";
+try {
+  const cookiePath = path.join(__dirname, "../cookies.json");
+  if (fs.existsSync(cookiePath)) {
+    parsedYoutubeCookies = JSON.parse(fs.readFileSync(cookiePath, "utf8"));
+  } else if (
+    typeof parsedYoutubeCookies === "string" &&
+    parsedYoutubeCookies.startsWith("[")
+  ) {
+    parsedYoutubeCookies = JSON.parse(parsedYoutubeCookies);
+  } else if (
+    typeof parsedYoutubeCookies === "string" &&
+    parsedYoutubeCookies.includes("=")
+  ) {
+    // Basic konversi dari raw string ke object array style jika user memaksa string biasa
+    parsedYoutubeCookies = parsedYoutubeCookies.split(";").map((cookie) => {
+      const parts = cookie.trim().split("=");
+      const name = parts.shift() || "";
+      const value = parts.join("=") || "";
+      return { domain: ".youtube.com", name, value, path: "/" };
+    });
+  }
+} catch (e) {
+  console.error("Gagal membaca atau mengonversi Format Cookies YouTube:", e);
+}
+
 client.distube = new DisTube(client, {
   emitNewSongOnly: true,
   emitAddSongWhenCreatingQueue: false,
   emitAddListWhenCreatingQueue: false,
   plugins: [],
-  youtubeCookie: process.env.YOUTUBE_COOKIE || "",
+  youtubeCookie: parsedYoutubeCookies,
   ytdlOptions: {
     highWaterMark: 1 << 24,
     quality: "highestaudio",
