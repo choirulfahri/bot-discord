@@ -37,8 +37,6 @@ client.distube = new DisTube(client, {
   plugins: [
     new YouTubePlugin({
       ytdlOptions: {
-        quality: "highestaudio",
-        highWaterMark: 1 << 25,
         requestOptions: {
           headers: {
             cookie: "", // Placeholder cookie
