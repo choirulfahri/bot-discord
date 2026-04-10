@@ -50,7 +50,7 @@ const playCommand: Command = {
         textId: interaction.channelId,
         voiceId: voiceChannel.id,
         volume: 100,
-        deaf: false,
+        deaf: true,
       });
 
       let searchEngine = query.startsWith("http") ? query : query;
