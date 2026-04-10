@@ -33,7 +33,7 @@ const Nodes = [
   {
     name: "LocalNode",
     url: "127.0.0.1:2333", // Port default lavalink
-    auth: "rahasialavalink", // Password default sesuai application.yml
+    auth: "youshallnotpass", // Password default sesuai application.yml
     secure: false, // Karena kita pakai localhost HTTP biasa
   },
 ];
